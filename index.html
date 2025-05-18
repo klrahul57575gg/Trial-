@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Static Site with CMS</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    h1 { color: #0077ff; }
+    #updates { margin-top: 20px; }
+    .update { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to My Static Site</h1>
+  <p>Below are the latest updates managed with Netlify CMS.</p>
+  
+  <div id="updates">Loading updates...</div>
+
+  <script>
+    async function fetchUpdates() {
+      const updatesContainer = document.getElementById('updates');
+      updatesContainer.innerHTML = '';
+
+      const updateFiles = [
+        '2025-05-18-first-update.md',
+        '2025-05-19-second-update.md'
+      ];
+
+      for (const file of updateFiles) {
+        try {
+          const res = await fetch(`/content/updates/${file}`);
+          if (!res.ok) throw new Error('Not found');
+          const text = await res.text();
+          const html = text
+            .replace(/^# (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^- (.*$)/gim, '<li>$1</li>')
+            .replace(/\n/g, '<br>');
+
+          updatesContainer.innerHTML += `<div class="update">${html}</div>`;
+        } catch {
+          updatesContainer.innerHTML += `<p>Could not load ${file}</p>`;
+        }
+      }
+    }
+    fetchUpdates();
+  </script>
+</body>
+</html>
